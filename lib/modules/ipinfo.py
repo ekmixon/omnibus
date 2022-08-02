@@ -20,7 +20,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'http://ipinfo.io/%s/json?token=%s' % (self.artifact['name'], self.api_key)
+        url = f"http://ipinfo.io/{self.artifact['name']}/json?token={self.api_key}"
 
         try:
             status, response = get(url, headers=self.headers)
@@ -29,7 +29,7 @@ class Plugin(object):
                 self.artifact['data']['ipinfo'] = response.json()
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

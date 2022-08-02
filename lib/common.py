@@ -35,37 +35,37 @@ PURPLE = '\033[95m'
 DARKBLUE = '\033[38;5;24m'
 END_COLOR = '\033[0m'
 
-API_CONF = '%s/etc/apikeys.json' % os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+API_CONF = f'{os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))}/etc/apikeys.json'
 
 
 def bold_msg(msg):
     """Bold a message"""
-    print('%s%s%s' % (BOLD, msg, END_COLOR))
+    print(f'{BOLD}{msg}{END_COLOR}')
 
 
 def info(msg):
     """ Informational message """
-    print('%s%s[*]%s %s' % (BOLD, DARKBLUE, END_COLOR, msg))
+    print(f'{BOLD}{DARKBLUE}[*]{END_COLOR} {msg}')
 
 
 def running(msg):
     """ Background task message """
-    print('%s%s[*]%s %s' % (BOLD, PURPLE, END_COLOR, msg))
+    print(f'{BOLD}{PURPLE}[*]{END_COLOR} {msg}')
 
 
 def success(msg):
     """ Successful completion message"""
-    print('%s%s[~]%s %s' % (BOLD, GREEN, END_COLOR, msg))
+    print(f'{BOLD}{GREEN}[~]{END_COLOR} {msg}')
 
 
 def warning(msg):
     """ Non-fatal error message """
-    print('%s%s[!]%s %s' % (BOLD, YELLOW, END_COLOR, msg))
+    print(f'{BOLD}{YELLOW}[!]{END_COLOR} {msg}')
 
 
 def error(msg):
     """ Error that stops proper task completion message """
-    print('%s%s[!]%s %s' % (BOLD, RED, END_COLOR, msg))
+    print(f'{BOLD}{RED}[!]{END_COLOR} {msg}')
 
 
 def pp_json(data):
@@ -79,7 +79,7 @@ def pp_json(data):
 def get_option(section, name, conf):
     config = ConfigParser.ConfigParser()
     if not os.path.exists(conf):
-        error('configuration file %s does not exist!' % conf)
+        error(f'configuration file {conf} does not exist!')
         return None
     config.read(conf)
     answer = None
@@ -97,7 +97,7 @@ def get_apikey(service):
         if service in api_keys.keys():
             return api_keys[service]
     else:
-        error('cannot find API keys file: %s' % API_CONF)
+        error(f'cannot find API keys file: {API_CONF}')
 
 
 def timestamp():
@@ -107,7 +107,7 @@ def timestamp():
 
 def required_opt(argument):
     """ Helper for CLI app to ensure all required arguments are there """
-    error('argument %s is required!' % argument)
+    error(f'argument {argument} is required!')
     sys.exit(1)
 
 
@@ -115,9 +115,8 @@ def list_dir(directory):
     """ Get all files in a given directory """
     files = []
     for root, dirs, files in os.walk(directory, topdown=True):
-        files = [f for f in files if not f[0] == '.']
-        for _file in files:
-            files.append(os.path.join(root, _file))
+        files = [f for f in files if f[0] != '.']
+        files.extend(os.path.join(root, _file) for _file in files)
     return files
 
 
@@ -129,33 +128,32 @@ def write_file(file_path, data):
         return True
     except Exception as err:
         raise err
-        return False
 
 
 def is_valid(file_path):
     """ Check if a given path is a valid file with data in it """
-    if os.path.exists(file_path) and os.path.isfile(file_path) \
-            and os.path.getsize(file_path) > 0:
-        return True
-    return False
+    return bool(
+        os.path.exists(file_path)
+        and os.path.isfile(file_path)
+        and os.path.getsize(file_path) > 0
+    )
 
 
 def read_file(file_path, lines=False):
     """ Read a given file and optionally return content lines or raw data """
     if is_valid(file_path):
-        if lines:
-            data = (open(file_path, 'rb').read()).split('\n')
-        else:
-            data = open(file_path, 'rb').read()
-        return data
+        return (
+            (open(file_path, 'rb').read()).split('\n')
+            if lines
+            else open(file_path, 'rb').read()
+        )
+
     return False
 
 
 def load_json(file_name):
     """ Load arbitrary JSON files by file name """
-    if is_valid(file_name):
-        return json.load(open(file_name, 'rb'))
-    return None
+    return json.load(open(file_name, 'rb')) if is_valid(file_name) else None
 
 
 def mkdir(path):
@@ -195,8 +193,7 @@ def utf_decode(data):
         return data
 
     try:
-        decoded = str(data.decode('utf-8'))
-        return decoded
+        return str(data.decode('utf-8'))
     except ValueError:
         return data
 
@@ -207,8 +204,7 @@ def utf_encode(data):
         return data
 
     try:
-        encoded = data.encode('utf-8')
-        return encoded
+        return data.encode('utf-8')
     except ValueError:
         return data
 
@@ -258,9 +254,7 @@ def is_btc_addr(string):
     @note: This does not verify that the string is a VALID BTC address,
     only that it matches the regex pattern of BTC addresses.
     """
-    if re.match(re_btc, string):
-        return 'btc'
-    return False
+    return 'btc' if re.match(re_btc, string) else False
 
 
 

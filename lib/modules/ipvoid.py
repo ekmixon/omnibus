@@ -18,7 +18,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'http://www.ipvoid.com/scan/%s/' % self.artifact['name']
+        url = f"http://www.ipvoid.com/scan/{self.artifact['name']}/"
 
         try:
             status, response = get(url, headers=self.headers)
@@ -35,7 +35,7 @@ class Plugin(object):
                         url = each.parent.a['href']
                         self.artifact['data']['ipvoid'] = {site: url}
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

@@ -17,18 +17,17 @@ class Plugin(object):
     def run(self):
         try:
             data = dshield.ip(self.artifact['name'])
-            if isinstance(data, dict):
-                if 'ip' in data.keys():
-                    self.artifact['data']['sans'] = data['ip']
-                    if data['ip']['hostname'] != '':
-                        self.artifact['children'].append({
-                            'name': data['ip']['hostname'],
-                            'type': 'host',
-                            'source': 'SANS ISC',
-                            'subtype': 'fqdn'
-                        })
+            if isinstance(data, dict) and 'ip' in data.keys():
+                self.artifact['data']['sans'] = data['ip']
+                if data['ip']['hostname'] != '':
+                    self.artifact['children'].append({
+                        'name': data['ip']['hostname'],
+                        'type': 'host',
+                        'source': 'SANS ISC',
+                        'subtype': 'fqdn'
+                    })
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

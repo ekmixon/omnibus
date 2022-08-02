@@ -24,8 +24,11 @@ class Plugin(object):
 
     def run(self):
         try:
-            status, response = get('https://api.fullcontact.com/v2/person.json?email=%s' % self.artifact['name'],
-                headers=self.headers)
+            status, response = get(
+                f"https://api.fullcontact.com/v2/person.json?email={self.artifact['name']}",
+                headers=self.headers,
+            )
+
 
             if status:
                 self.artifact['data']['fullcontact'] = response.json()
@@ -41,7 +44,7 @@ class Plugin(object):
                         self.artifact['children'].append(child)
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

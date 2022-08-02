@@ -16,7 +16,8 @@ class Plugin(object):
 
 
     def ip(self):
-        url = 'https://otx.alienvault.com:443/api/v1/indicators/IPv4/%s/' % self.artifact['name']
+        url = f"https://otx.alienvault.com:443/api/v1/indicators/IPv4/{self.artifact['name']}/"
+
 
         try:
             status, response = get(url)
@@ -24,11 +25,12 @@ class Plugin(object):
             if status:
                 self.artifact['data']['otx'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def host(self):
-        url = 'https://otx.alienvault.com:443/api/v1/indicators/domain/%s/' % self.artifact['name']
+        url = f"https://otx.alienvault.com:443/api/v1/indicators/domain/{self.artifact['name']}/"
+
 
         try:
             status, response = get(url)
@@ -36,11 +38,12 @@ class Plugin(object):
             if status:
                 self.artifact['data']['otx'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def hash(self):
-        url = 'https://otx.alienvault.com:443/api/v1/indicators/file/%s/' % self.artifact['name']
+        url = f"https://otx.alienvault.com:443/api/v1/indicators/file/{self.artifact['name']}/"
+
 
         try:
             status, response = get(url)
@@ -48,7 +51,7 @@ class Plugin(object):
             if status:
                 self.artifact['data']['otx'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

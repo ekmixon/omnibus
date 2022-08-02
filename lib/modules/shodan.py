@@ -26,18 +26,19 @@ class Plugin(object):
             if status:
                 self.artifact['data']['shodan'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def ip(self):
-        url = 'https://api.shodan.io/shodan/host/%s?key=%s' % (self.artifact['name'], self.api_key)
+        url = f"https://api.shodan.io/shodan/host/{self.artifact['name']}?key={self.api_key}"
+
 
         try:
             status, response = get(url, headers=self.headers)
             if status:
                 self.artifact['data']['shodan'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

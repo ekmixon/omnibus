@@ -27,7 +27,7 @@ class Plugin(object):
                 if item not in results:
                     results.append(str(item))
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
             results.append(None)
 
         return results

@@ -39,7 +39,7 @@ class Plugin(object):
                     self.artifact['data']['whois']['emails'] = net_data['emails']
 
         except Exception as err:
-            warning('Caught unhandled exception: %s' % str(err))
+            warning(f'Caught unhandled exception: {str(err)}')
 
 
     def fqdn(self):

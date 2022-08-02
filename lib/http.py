@@ -34,10 +34,7 @@ def post(*args, **kwargs):
         except:
             return (False, None)
 
-        if req.status_code == 200:
-            return (True, req)
-        else:
-            return (False, req)
+        return (True, req) if req.status_code == 200 else (False, req)
 
 
 def get(*args, **kwargs):
@@ -54,7 +51,4 @@ def get(*args, **kwargs):
         except:
             return (False, None)
 
-        if req.status_code == 200:
-            return (True, req)
-        else:
-            return (False, req)
+        return (True, req) if req.status_code == 200 else (False, req)

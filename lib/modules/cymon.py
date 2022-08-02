@@ -23,14 +23,14 @@ class Plugin(object):
         try:
             self.artifact['data']['cymon'] = self.api.ip_lookup(self.artifact['name'])
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def fqdn(self):
         try:
             self.artifact['data']['cymon'] = self.api.domain_lookup(self.artifact['name'])
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

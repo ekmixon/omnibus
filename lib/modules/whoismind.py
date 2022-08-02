@@ -17,7 +17,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'http://www.whoismind.com/emails/%s.html' % self.artifact['name']
+        url = f"http://www.whoismind.com/emails/{self.artifact['name']}.html"
 
         try:
             status, response = get(url, headers=self.headers)
@@ -31,7 +31,7 @@ class Plugin(object):
                         self.artifact['data']['whoismind'].append(tag.text)
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

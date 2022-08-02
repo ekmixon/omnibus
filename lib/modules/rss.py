@@ -30,7 +30,7 @@ class Plugin(object):
                     })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 

@@ -46,7 +46,7 @@ class Plugin(object):
                     domains.append(item['hostname'])
 
         except Exception as err:
-            warning('Caught unknown exception: %s' % str(err))
+            warning(f'Caught unknown exception: {str(err)}')
 
         self.artifact['data']['dnsbrute']['otx'] = domains
 
@@ -63,7 +63,7 @@ class Plugin(object):
                 self.artifact['data']['dnsbrute']['virustotal'] = jdata['subdomains']
 
         except Exception as err:
-            warning('Caught unknown exception: %s' % str(err))
+            warning(f'Caught unknown exception: {str(err)}')
 
 
 def main(artifact):

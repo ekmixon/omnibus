@@ -15,7 +15,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://hacked-emails.com/api?q=%s' % self.artifact['name']
+        url = f"https://hacked-emails.com/api?q={self.artifact['name']}"
         headers = {'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'}
 
         try:
@@ -25,7 +25,7 @@ class Plugin(object):
                 results = response.json()
                 self.artifact['data']['hackedemails'] = results
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

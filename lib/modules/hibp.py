@@ -16,25 +16,26 @@ class Plugin(object):
 
 
     def breaches(self):
-        url = 'https://haveibeenpwned.com/api/v2/breachedaccount/%s' % self.artifact['name']
+        url = f"https://haveibeenpwned.com/api/v2/breachedaccount/{self.artifact['name']}"
+
 
         try:
             status, response = get(url, headers=self.headers)
             if status:
                 self.artifact['data']['hibp']['breaches'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def pastes(self):
-        url = 'https://haveibeenpwned.com/api/v2/pasteaccount/%s' % self.artifact['name']
+        url = f"https://haveibeenpwned.com/api/v2/pasteaccount/{self.artifact['name']}"
 
         try:
             status, response = get(url, headers=self.headers)
             if status:
                 self.artifact['data']['hibp']['pastes'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

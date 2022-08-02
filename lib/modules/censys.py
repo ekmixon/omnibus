@@ -21,14 +21,14 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://censys.io/api/v1/view/ipv4/%s' % self.artifact['name']
+        url = f"https://censys.io/api/v1/view/ipv4/{self.artifact['name']}"
 
         try:
             status, response = get(url, auth=(self.api_key['token'], self.api_key['secret']), headers=self.headers)
             if status:
                 self.artifact['data']['censys'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

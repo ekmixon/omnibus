@@ -19,7 +19,7 @@ class JSON(object):
         self.file_path = None
 
         if file_name == 'report.json':
-            self.file_name = '%s_%s.json' % (data['name'], timestamp)
+            self.file_name = f"{data['name']}_{timestamp}.json"
         else:
             self.file_name = file_name
 
@@ -32,11 +32,11 @@ class JSON(object):
             self.file_path = os.path.join(file_path, file_name)
             if not os.path.exists(self.file_path):
                 self.save()
-                success('saved report to %s' % self.file_path)
-            return False
+                success(f'saved report to {self.file_path}')
         else:
-            error('unable to find directory %s - cannot save report' % file_path)
-            return False
+            error(f'unable to find directory {file_path} - cannot save report')
+
+        return False
 
 
     def save(self):

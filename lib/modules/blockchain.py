@@ -16,14 +16,14 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://blockchain.info/rawaddr/%s' % self.artifact['name']
+        url = f"https://blockchain.info/rawaddr/{self.artifact['name']}"
 
         try:
             status, response = get(url, headers=self.headers)
             if status:
                 self.artifact['data']['blockchain'] = response.json()
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

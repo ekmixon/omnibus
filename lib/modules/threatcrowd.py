@@ -18,14 +18,14 @@ class Plugin(object):
         try:
             self.artifact['data']['threatcrowd'] = threatcrowd.ip_report(self.artifact['name'])
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def fqdn(self):
         try:
             self.artifact['data']['threatcrowd'] = threatcrowd.domain_report(self.artifact['name'])
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

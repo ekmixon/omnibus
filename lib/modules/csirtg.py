@@ -23,7 +23,7 @@ class Plugin(object):
                 self.artifact['data']['csirtg'] = search.search(self.artifact['name'])
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

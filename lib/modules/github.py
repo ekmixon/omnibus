@@ -15,7 +15,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://api.github.com/users/%s' % self.artifact['name']
+        url = f"https://api.github.com/users/{self.artifact['name']}"
         headers = {'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'}
 
         try:
@@ -23,16 +23,18 @@ class Plugin(object):
             if status:
                 self.artifact.data['github'] = response.json()
 
-                if 'email' in self.artifact.data['github'].keys():
-                    if self.artifact.data['github']['email']:
-                        self.artifact['children'].append({
-                            'name': self.artifact.data['github']['email'],
-                            'type': 'email',
-                            'subtype': 'account',
-                            'source': 'github'
-                        })
+                if (
+                    'email' in self.artifact.data['github'].keys()
+                    and self.artifact.data['github']['email']
+                ):
+                    self.artifact['children'].append({
+                        'name': self.artifact.data['github']['email'],
+                        'type': 'email',
+                        'subtype': 'account',
+                        'source': 'github'
+                    })
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

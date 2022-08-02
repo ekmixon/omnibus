@@ -19,12 +19,12 @@ class Plugin(object):
             raise TypeError('API keys cannot be left blank | set all keys in etc/apikeys.json')
 
         self.headers = {
-            'Authorization': 'Bearer %s' % self.api_key,
-            'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'
+            'Authorization': f'Bearer {self.api_key}',
+            'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)',
         }
 
     def run(self):
-        url = 'https://person.clearbit.com/v1/people/email/%s' % self.artifact['name']
+        url = f"https://person.clearbit.com/v1/people/email/{self.artifact['name']}"
 
         try:
             status, response = get(url, headers=self.headers)
@@ -36,7 +36,7 @@ class Plugin(object):
                     self.artifact['data']['fullcontact'] = response.json()
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

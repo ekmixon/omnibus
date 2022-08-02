@@ -15,11 +15,11 @@ class Mongo(object):
     def __init__(self, config):
         self._host = get_option('mongo', 'host', config)
         self._port = int(get_option('mongo', 'port', config))
-        self._server = '%s:%s' % (self._host, self._port)
+        self._server = f'{self._host}:{self._port}'
         try:
             self.conn = pymongo.MongoClient(self._server)
         except Exception as err:
-            error('failed to connect to Mongo instance: %s' % str(err))
+            error(f'failed to connect to Mongo instance: {str(err)}')
             raise err
 
         self.db = self.conn['omnibus']
@@ -34,17 +34,13 @@ class Mongo(object):
         """ get value of given key from db query """
         coll = self.use_coll(collection)
         result = dict(coll.find_one(query, {key: 1}))
-        if result == {}:
-            return None
-        return result[key]
+        return result[key] if result else None
 
 
     def exists(self, collection, query):
         coll = self.use_coll(collection)
         result = coll.find_one(query)
-        if result is None:
-            return False
-        return True
+        return result is not None
 
 
     def count(self, collection, query={}):
@@ -62,9 +58,7 @@ class Mongo(object):
         try:
             doc_id = coll.insert(data)
         except Exception as err:
-            error('failed to index data: %s' % str(err))
-            pass
-
+            error(f'failed to index data: {str(err)}')
         return str(doc_id)
 
 
@@ -75,7 +69,7 @@ class Mongo(object):
         try:
             doc_id = coll.update(query, {'$set': new_data})
         except:
-            error('failed to update documents: %s' % query)
+            error(f'failed to update documents: {query}')
 
         return doc_id
 
@@ -85,8 +79,7 @@ class Mongo(object):
         try:
             coll.remove(query)
         except:
-            error('failed to delete documets: %s' % query)
-            pass
+            error(f'failed to delete documets: {query}')
 
 
     def find_recent(self, collection, query={}, num_items=25, offset=0):
@@ -95,15 +88,13 @@ class Mongo(object):
         result = []
 
         if total < num_items:
-            result = list(coll.find(query))
+            return list(coll.find(query))
 
         elif offset <= 0:
-            result = list(coll.find(query).limit(num_items).sort([('_id', -1)]))
+            return list(coll.find(query).limit(num_items).sort([('_id', -1)]))
 
         else:
-            result = list(coll.find(query).skip(offset).limit(num_items).sort([('_id', -1)]))
-
-        return result
+            return list(coll.find(query).skip(offset).limit(num_items).sort([('_id', -1)]))
 
 
     def find(self, collection, query, one=False):

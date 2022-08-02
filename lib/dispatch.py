@@ -50,13 +50,10 @@ class Dispatch(object):
         is_key, value = lookup_key(session, artifact)
 
         if is_key and value is None:
-            error('Unable to find artifact key in session (%s)' % artifact)
+            error(f'Unable to find artifact key in session ({artifact})')
             return
-        elif is_key and value is not None:
+        elif is_key:
             artifact = value
-        else:
-            pass
-
         artifact_type = detect_type(artifact)
 
         artifact = self.db.find(artifact_type, {'name': artifact}, one=True)
@@ -87,13 +84,13 @@ class Dispatch(object):
                         if len(result['children']) > 0:
                             info('Created child artifacts: %d' % len(result['children']))
 
-                    results.append({'[%s]' % m: result['data'][m]})
+                    results.append({f'[{m}]': result['data'][m]})
 
                 else:
-                    warning('No results found (%s)' % m)
+                    warning(f'No results found ({m})')
 
             else:
-                warning('Failed to get module results (%s)' % m)
+                warning(f'Failed to get module results ({m})')
 
         success('Machine completed')
 
@@ -101,32 +98,23 @@ class Dispatch(object):
     def submit(self, session, module, artifact, no_argument=False):
         """ Run a single module against an artifact """
         if no_argument:
-            module_result = self.run(module, None)
-            return module_result
+            return self.run(module, None)
 
         is_key, value = lookup_key(session, artifact)
 
-        if is_key and value is None:
-            error('Unable to find artifact key in session (%s)' % artifact)
-            return
-        elif is_key and value is not None:
-            artifact = value
-        else:
-            pass
-
+        if is_key:
+            if value is None:
+                error(f'Unable to find artifact key in session ({artifact})')
+                return
+            else:
+                artifact = value
         artifact_type = detect_type(artifact)
 
         artifact = self.db.find(artifact_type, {'name': artifact}, one=True)
 
         if artifact is None:
-            warning('Unable to find artifact in database (%s)' % artifact['name'])
+            warning(f"Unable to find artifact in database ({artifact['name']})")
             return None
-
-            if module in self.modules[artifact['type']] or module in self.modules[artifact['subtype']]:
-                pass
-            else:
-                warning('Artifact is not supported by module (%s)' % (artifact['name']))
-                return None
 
         result = self.run(module, artifact)
 
@@ -149,11 +137,11 @@ class Dispatch(object):
                 return result['data'][module]
 
             else:
-                warning('No results found (%s)' % module)
+                warning(f'No results found ({module})')
                 return None
 
         else:
-            warning('Failed to get module results (%s)' % module)
+            warning(f'Failed to get module results ({module})')
 
 
     def run(self, module, artifact):
@@ -161,15 +149,15 @@ class Dispatch(object):
         results = None
 
         try:
-            ptr = importlib.import_module('lib.modules.%s' % module)
+            ptr = importlib.import_module(f'lib.modules.{module}')
         except Exception as err:
-            error('Failed to load module (%s)' % module)
+            error(f'Failed to load module ({module})')
             raise err
 
         try:
             results = ptr.main(artifact)
         except Exception as err:
-            error('Exception caught when running module (%s)' % module)
+            error(f'Exception caught when running module ({module})')
             raise err
 
         return results

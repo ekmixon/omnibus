@@ -29,9 +29,7 @@ class Plugin(object):
         wap = fetty_wap.latest()
 
         target_url = Wappalyzer.WebPage.new_from_url(self.artifact['name'])
-        result = wap.analyze_with_categories(target_url)
-
-        if result:
+        if result := wap.analyze_with_categories(target_url):
             self.artifact['data']['wappalyzer'] = result
 
         # reset artifact to normal name

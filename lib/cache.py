@@ -34,12 +34,11 @@ class RedisCache(object):
         """ Return most recent message from a given Redis queue"""
         try:
             ret_val = self.db.lindex(queue_name, -1)
-            if isinstance(ret_val, bytes):
-                return utf_decode(ret_val)
-            return ret_val
+            return utf_decode(ret_val) if isinstance(ret_val, bytes) else ret_val
         except Exception as err:
-            error('[redis] failed to receive message from queue %s (error: %s)' % (queue_name, str(err)))
-            pass
+            error(
+                f'[redis] failed to receive message from queue {queue_name} (error: {str(err)})'
+            )
 
 
     def delete(self, names):
@@ -47,7 +46,7 @@ class RedisCache(object):
         try:
             self.db.delete(names)
         except Exception as err:
-            error('[redis] failed to delete artifacts (error: %s)' % str(err))
+            error(f'[redis] failed to delete artifacts (error: {str(err)})')
 
 
     def exists(self, key):
@@ -58,9 +57,7 @@ class RedisCache(object):
     def get(self, key):
         """ Get a value from redis by key """
         retval = self.db.get(key)
-        if isinstance(retval, bytes):
-            return utf_decode(retval)
-        return retval
+        return utf_decode(retval) if isinstance(retval, bytes) else retval
 
 
     def set(self, key, value, ttl=None):

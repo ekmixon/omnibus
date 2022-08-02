@@ -22,7 +22,8 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://api.passivetotal.org/v2/dns/passive/unique?query=%s' % self.artifact['name']
+        url = f"https://api.passivetotal.org/v2/dns/passive/unique?query={self.artifact['name']}"
+
 
         user = self.api_key['user']
         token = self.api_key['key']
@@ -35,7 +36,7 @@ class Plugin(object):
                 self.artifact['data']['passivetotal'] = data
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

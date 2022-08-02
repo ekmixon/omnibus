@@ -16,7 +16,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'http://api.cybercure.ai/feed/search?value=%s' % self.artifact['name']
+        url = f"http://api.cybercure.ai/feed/search?value={self.artifact['name']}"
         headers = {'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'}
 
         try:
@@ -25,7 +25,7 @@ class Plugin(object):
                 results = response.json()
                 self.artifact['data']['cybercure'] = results
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
 def main(artifact):

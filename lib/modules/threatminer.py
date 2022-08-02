@@ -17,7 +17,7 @@ class Plugin(object):
 
 
     def ip(self):
-        url = 'https://api.threatminer.org/v2/host.php?q=%s&rt=2' % self.artifact['name']
+        url = f"https://api.threatminer.org/v2/host.php?q={self.artifact['name']}&rt=2"
 
         # check for passive DNS results
         try:
@@ -40,12 +40,14 @@ class Plugin(object):
                             })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def fqdn(self):
-        sub_url = 'https://api.threatminer.org/v2/domain.php?q=%s&rt=5' % self.artifact['name']
-        pdns_url = 'https://api.threatminer.org/v2/domain.php?q=%s&rt=2' % self.artifact['name']
+        sub_url = f"https://api.threatminer.org/v2/domain.php?q={self.artifact['name']}&rt=5"
+
+        pdns_url = f"https://api.threatminer.org/v2/domain.php?q={self.artifact['name']}&rt=2"
+
 
         # check for passive DNS results
         try:
@@ -68,7 +70,7 @@ class Plugin(object):
                             })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
         # check for subdomains
         try:
@@ -91,11 +93,12 @@ class Plugin(object):
                             })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def hash(self):
-        url = 'https://api.threatminer.org/v2/sample.php?q=%s&rt=3' % self.artifact['name']
+        url = f"https://api.threatminer.org/v2/sample.php?q={self.artifact['name']}&rt=3"
+
 
         try:
             status, response = get(url)
@@ -107,7 +110,7 @@ class Plugin(object):
                     self.artifact['data']['threatminer'] = {'http_traffic': data['results']}
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
         # there could potentially be a ton of data from this query for files so for now let's avoid
         # creating child artifacts based off the results. example tests show that lots of the traffic

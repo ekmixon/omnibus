@@ -190,7 +190,7 @@ class Console(cmd2.Cmd):
         keys = self.session.db.scan_iter()
         for key in keys:
             value = self.session.get(key)
-            print('[%s] %s' % (key, value))
+            print(f'[{key}] {value}')
             count += 1
         info('Active Artifacts: %d' % count)
 
@@ -215,14 +215,14 @@ class Console(cmd2.Cmd):
             error('Artifact ID must be an integer')
             return
 
-        if self.session is not None:
-            if self.session.exists(arg):
-                self.session.delete(arg)
-                success('Removed artifact from cache (%s)' % arg)
-            else:
-                warning('Unable to find artifact by ID (%s)' % arg)
-        else:
+        if self.session is None:
             warning('No active session; start a new session by running the "session" command')
+
+        elif self.session.exists(arg):
+            self.session.delete(arg)
+            success(f'Removed artifact from cache ({arg})')
+        else:
+            warning(f'Unable to find artifact by ID ({arg})')
 
 
     def do_new(self, arg):
@@ -237,7 +237,7 @@ class Console(cmd2.Cmd):
         if not self.db.exists(artifact.type, {'name': artifact.name}):
             doc_id = self.db.insert_one(artifact.type, artifact)
             if doc_id is not None:
-                success('Created new artifact (%s - %s)' % (artifact.name, artifact.type))
+                success(f'Created new artifact ({artifact.name} - {artifact.type})')
 
         if self.session is None:
             self.session = RedisCache(config)
@@ -245,12 +245,10 @@ class Console(cmd2.Cmd):
             success('Opened new session')
             print('Artifact ID: 1')
         else:
-            count = 0
-            for key in self.session.db.scan_iter():
-                count += 1
+            count = sum(1 for _ in self.session.db.scan_iter())
             _id = count + 1
             self.session.set(_id, artifact.name)
-            print('Artifact ID: %s' % _id)
+            print(f'Artifact ID: {_id}')
 
 
     def do_delete(self, arg):
@@ -260,14 +258,12 @@ class Console(cmd2.Cmd):
                delete <session id>"""
         is_key, value = lookup_key(self.session, arg)
 
-        if is_key and value is None:
-            error('Unable to find artifact key in session (%s)' % arg)
-            return
-        elif is_key and value is not None:
-            arg = value
-        else:
-            pass
-
+        if is_key:
+            if value is None:
+                error(f'Unable to find artifact key in session ({arg})')
+                return
+            else:
+                arg = value
         artifact_type = detect_type(arg)
         self.db.delete_one(artifact_type, {'name': arg})
 
@@ -307,7 +303,7 @@ class Console(cmd2.Cmd):
 
         Usage: open <path/to/file.txt> """
         if not os.path.exists(arg):
-            warning('Cannot find file on disk (%s)' % arg)
+            warning(f'Cannot find file on disk ({arg})')
             return
 
         artifacts = read_file(arg, True)
@@ -317,7 +313,7 @@ class Console(cmd2.Cmd):
             if not self.db.exists(new_artifact.type, {'name': new_artifact.name}):
                 doc_id = self.db.insert_one(new_artifact.type, new_artifact)
                 if doc_id is not None:
-                    success('Created new artifact (%s - %s)' % (artifact.name, artifact.type))
+                    success(f'Created new artifact ({artifact.name} - {artifact.type})')
 
             if self.session is None:
                 self.session = RedisCache(config)
@@ -325,12 +321,10 @@ class Console(cmd2.Cmd):
                 success('Opened new session')
                 print('Artifact ID: 1')
             else:
-                count = 0
-                for key in self.session.db.scan_iter():
-                    count += 1
+                count = sum(1 for _ in self.session.db.scan_iter())
                 _id = count + 1
                 self.session.set(_id, arg)
-                print('Artifact ID: %s' % _id)
+                print(f'Artifact ID: {_id}')
 
         success('Finished loading artifact list')
 
@@ -342,24 +336,22 @@ class Console(cmd2.Cmd):
                report <session id>"""
         is_key, value = lookup_key(self.session, arg)
 
-        if is_key and value is None:
-            error('Unable to find artifact key in session (%s)' % arg)
-            return
-        elif is_key and value is not None:
-            arg = value
-        else:
-            pass
-
+        if is_key:
+            if value is None:
+                error(f'Unable to find artifact key in session ({arg})')
+                return
+            else:
+                arg = value
         _type = detect_type(arg)
 
         result = self.db.find(_type, {'name': arg}, one=True)
         if len(result) == 0:
-            warning('No entry found for artifact (%s)' % arg)
+            warning(f'No entry found for artifact ({arg})')
         else:
             report = storage.JSON(data=result, file_path=output_dir)
             report.save()
             if os.path.exists(report.file_path):
-                success('Saved artifact report (%s)' % report.file_path)
+                success(f'Saved artifact report ({report.file_path})')
             else:
                 error('Failed to properly save report')
 
@@ -577,17 +569,15 @@ class Console(cmd2.Cmd):
             _type = detect_type(arg)
             is_key, value = lookup_key(self.session, arg)
 
-            if is_key and value is None:
-                error('Unable to find artifact key in session (%s)' % arg)
-                return
-            elif is_key and value is not None:
-                arg = value
-            else:
-                pass
-
+            if is_key:
+                if value is None:
+                    error(f'Unable to find artifact key in session ({arg})')
+                    return
+                else:
+                    arg = value
         if self.db.exists(_type, {'name': last}):
             self.db.update_one(_type, {'name': last}, {'source': arg})
-            success('Added source to artifact entry (%s: %s)' % (last, arg))
+            success(f'Added source to artifact entry ({last}: {arg})')
         else:
             warning('Failed to find last artifact in MongoDB. Run "new <artifact name>" before using the source command')
 
@@ -659,11 +649,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Omnibus - https://github.com/InQuest/omnibus')
     ob_group = parser.add_argument_group('cli options')
 
-    ob_group.add_argument('-o', '--output',
+    ob_group.add_argument(
+        '-o',
+        '--output',
         help='report output directory',
         action='store',
-        default='%s/reports' % os.path.dirname(os.path.realpath(__file__)),
-        required=False)
+        default=f'{os.path.dirname(os.path.realpath(__file__))}/reports',
+        required=False,
+    )
+
 
     ob_group.add_argument('-d', '--debug',
         help='enable full traceback on exceptions',
@@ -673,20 +667,20 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    config = '%s/etc/omnibus.conf' % os.path.dirname(os.path.realpath(__file__))
+    config = f'{os.path.dirname(os.path.realpath(__file__))}/etc/omnibus.conf'
 
     output_dir = args.output
     DEBUG = args.debug
 
-    info('Using configuration file (%s) ...' % config)
-    info('Debug: %s' % DEBUG)
+    info(f'Using configuration file ({config}) ...')
+    info(f'Debug: {DEBUG}')
 
     if os.path.exists(output_dir):
         if not os.path.isdir(output_dir):
             error('Specified report output location is not a directory; exiting ...')
             sys.exit(1)
     else:
-        info('Creating report output directory (%s) ...' % output_dir)
+        info(f'Creating report output directory ({output_dir}) ...')
         mkdir(output_dir)
 
     console = Console()

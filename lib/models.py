@@ -60,11 +60,7 @@ class Artifact(object):
 
 
 def create_artifact(artifact_name, _type=None, source=None, subtype=None, parent=None):
-    if _type is None:
-        artifact_type = detect_type(artifact_name)
-    else:
-        artifact_type = _type
-
+    artifact_type = detect_type(artifact_name) if _type is None else _type
     if artifact_type not in artifact_types:
         warning('Artifact must be one of: email, ipv4, fqdn, user, hash, bitcoin address')
         return None

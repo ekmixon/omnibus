@@ -17,7 +17,7 @@ class Plugin(object):
 
 
     def run(self):
-        url = 'https://www.twitter.com/%s' % self.artifact['name']
+        url = f"https://www.twitter.com/{self.artifact['name']}"
 
         try:
             status, response = get(url, headers=self.headers)

@@ -19,38 +19,39 @@ class Plugin(object):
 
 
     def ip(self):
-        url = 'http://bgp.he.net/ip/%s#_dns' % self.artifact['name']
+        url = f"http://bgp.he.net/ip/{self.artifact['name']}#_dns"
         headers = {'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'}
 
         try:
             status, response = get(url, headers=headers)
 
             if status:
-                result = []
                 data = BeautifulSoup(response.text)
 
-                for item in data.findAll(attrs={'id': 'dns', 'class': 'tabdata hidden'}):
-                    result.append(item.text.strip())
+                result = [
+                    item.text.strip()
+                    for item in data.findAll(
+                        attrs={'id': 'dns', 'class': 'tabdata hidden'}
+                    )
+                ]
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def fqdn(self):
-        url = 'http://bgp.he.net/dns/%s#_whois' % self.artifact['name']
+        url = f"http://bgp.he.net/dns/{self.artifact['name']}#_whois"
         headers = {'User-Agent': 'OSINT Omnibus (https://github.com/InQuest/Omnibus)'}
 
         try:
             status, response = get(url, headers=headers)
 
-            result = []
             if status:
                 pattern = re.compile('\/dns\/.+\".title\=\".+\"\>(.+)<\/a\>', re.IGNORECASE)
                 hosts = re.findall(pattern, response.text)
-                for h in hosts:
-                    result.append(h.strip())
+                result = [h.strip() for h in hosts]
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):

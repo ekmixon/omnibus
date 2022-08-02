@@ -46,7 +46,7 @@ class Plugin(object):
                                 })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def fqdn(self):
@@ -72,7 +72,7 @@ class Plugin(object):
                                 })
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def hash(self):
@@ -94,7 +94,7 @@ class Plugin(object):
                     self.artifact['data']['virustotal'] = data
 
         except Exception as err:
-            warning('Caught exception in module (%s)' % str(err))
+            warning(f'Caught exception in module ({str(err)})')
 
 
     def run(self):
